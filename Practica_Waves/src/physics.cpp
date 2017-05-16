@@ -54,7 +54,7 @@ struct Waves {
 	float phi;
 };
 const float lengthWaves = 2.f;
-Waves waves[2]; //aqui hauria danar el lenghtwaves
+Waves waves[4]; //aqui hauria danar el lenghtwaves
 //float amplitude;
 //float lambda;
 //float kA;
@@ -145,12 +145,11 @@ namespace GerstnerWaves {
 		float z = 0.f;
 		//glm::vec3 KaTemp = glm::vec3(waves.kA.x, 0.f, w.kA.z);
 		//for (int i = 1; i < LilSpheres::maxParticles; i++) {
-		for (int i = 0; i < 1; i++) {
-			glm::vec3 kXZ = glm::vec3(waves[i].k.x, 0.f, waves[i].k.z);
+		for (int i = 0; i < 4; i++) {
+			x += (waves[i].k.x / glm::length(waves[i].k))* waves[i].amplitude * glm::sin(glm::dot(waves[i].k, pC.posInitial) - waves[i].freq * dt + waves[i].phi);
+			y += waves[i].amplitude * glm::cos(glm::dot(waves[i].k, pC.posInitial) - waves[i].freq * dt + waves[i].phi);
+			z += (waves[i].k.z / glm::length(waves[i].k))* waves[i].amplitude * glm::sin(glm::dot(waves[i].k, pC.posInitial) - waves[i].freq * dt + waves[i].phi);
 
-			x += (waves[i].k.x / glm::length(waves[i].k))* waves[i].amplitude * glm::sin(glm::dot(waves[i].k.x, pC.posInitial.x) - waves[i].freq * dt + waves[i].phi);
-			y += waves[i].amplitude * glm::cos(glm::dot(waves[i].k.y, pC.posInitial.y) - waves[i].freq * dt + waves[i].phi);
-			z += (waves[i].k.z / glm::length(waves[i].k))* waves[i].amplitude * glm::sin(glm::dot(waves[i].k.z, pC.posInitial.z) - waves[i].freq * dt + waves[i].phi);
 		}
 		temp = glm::vec3(pC.posInitial.x - x, y, pC.posInitial.z - z);
 
@@ -168,8 +167,8 @@ void PhysicsInit() {
 	sphere->pos = glm::vec3(randomXZ, randomY, randomXZ);
 	sphere->rad = rand() % 5+1;
 
-	for (int i = 0; i < 2; i++) {
-		waves[i].amplitude = 1.f;
+	for (int i = 0; i < 4; i++) {
+		waves[i].amplitude = 1.f + i;
 		waves[i].freq = 0.5f;
 		waves[i].phi = 0.f;
 		waves[i].k = glm::vec3(0.5f);
