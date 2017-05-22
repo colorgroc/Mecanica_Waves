@@ -38,7 +38,7 @@ float cont = 0;
 //void Spring(int part1, int part2);
 
 #define WATER 1000;
-#define TEST 10;
+#define TEST 10.f;
 
 glm::vec3 normal;
 glm::vec3 gravity = glm::vec3(0, -9.8, 0);
@@ -106,9 +106,12 @@ namespace Sphere {
 
 struct OurShpere {
 	glm::vec3 pos;
+	glm::vec3 vel;
 	float rad;
 	float mass = 3;
+	glm::vec3 linealMomentum;
 	glm::vec3 force;
+
 };
 
 
@@ -141,12 +144,12 @@ namespace GerstnerWaves {
 		std::map <float, glm::vec3> mapPos;
 		float dis, sum = 0;
 		float mitjana = 0;
+		glm::vec3 Vsub;
+		glm::vec3 yNorm = glm::vec3(0, 1, 0);
 
 		for (int i = 0; i < LilSpheres::maxParticles; i++) {
-			for (std::map<float, glm::vec3>::iterator it = mapPos.begin(); it != mapPos.end(); it++) {
-				dis = glm::distance(sphere->pos, glm::vec3(pC[i].pos.x, 0.f, pC[i].pos.z));
-				mapPos[dis] = pC[i].pos;
-			}
+			dis = glm::distance(sphere->pos, glm::vec3(pC[i].pos.x, 0.f, pC[i].pos.z));
+			mapPos[dis] = pC[i].pos;
 		}
 		int j = 0;
 		for (std::map<float, glm::vec3>::iterator it = mapPos.begin(); it != mapPos.end(); it++) {
@@ -157,8 +160,13 @@ namespace GerstnerWaves {
 				break;
 			}
 			//to be continued
-			
+			if(sphere->pos.y - mitjana > 0)
+				Vsub = glm::vec3(0, sphere->pos.y - mitjana, 0);
+			else Vsub = glm::vec3(0);
 		}
+
+		sphere->force = gravity*Vsub*yNorm;
+		sphere->force *= TEST;
 
 	}
 
@@ -197,7 +205,7 @@ void PhysicsInit() {
 		pC[i].force = glm::vec3(0.f, 0.f, 0.f);
 		pC[i].posInitial = glm::vec3(pC[i].pos.x, pC[i].pos.y, pC[i].pos.z);
 	}
-
+	sphere->linealMomentum = glm::vec3(0, 0, 0);
 	ClothMesh::updateClothMesh(mesh);
 }
 
@@ -221,6 +229,12 @@ void PhysicsUpdate(float dt) {
 		mesh[3 * i + 1] = pC[i].pos.y;
 		mesh[3 * i + 2] = pC[i].pos.z;
 	}
+	GerstnerWaves::Buoyancy();
+
+	sphere->linealMomentum = sphere->linealMomentum + sphere->force;
+	sphere->vel = sphere->linealMomentum / sphere->mass;
+	sphere->pos = sphere->pos + dt * sphere->vel;
+
 	Sphere::updateSphere(sphere->pos, sphere->rad);
 	ClothMesh::updateClothMesh(mesh);
 
