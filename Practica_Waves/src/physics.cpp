@@ -19,24 +19,15 @@ bool euler = true;
 int waterfallIncrementX = -3;
 float timePerFrame = 0.033;
 float lenght = 0.5;
-float d;
+//float d;
 int eixX = 14;
 int eixY = 18;
 int maxMesh = eixX*eixY;
-float Ks = 0;
-float KdS = 10;
-float KdSh = 8;
-float KdB = 5;
-float coefElasticity = 0.2;
-float coefFriction = 0.1;
-glm::vec3 temp;
-glm::vec3 vTangencial;
-bool collision = false;
-float col;
+
 glm::vec3 initial;
 float cont = 0;
 //void Spring(int part1, int part2);
-
+float cD = 1.f;
 #define WATER 1000;
 #define TEST 10.f;
 
@@ -83,6 +74,7 @@ void GUI() {
 	
 		ImGui::SliderFloat("Time", &cont, 0, 20);
 		ImGui::SliderFloat("Mass", &sphere->mass, 1, 300);
+		ImGui::SliderFloat("Buoyancy", &cD, 0, 1);
 	}
 
 	// ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
@@ -117,7 +109,7 @@ namespace Sphere {
 
 float *mesh = new float[3 * maxMesh];
 Particle *pC = new Particle[LilSpheres::maxParticles];
-float cD = 1.0;
+
 
 namespace GerstnerWaves {
 
@@ -195,27 +187,28 @@ void PhysicsInit() {
 
 	float randFreq = ((float)rand() / RAND_MAX);
 	//1a ona
+	if (randFreq > 0.2) {
+		waves[0].amplitude = 1.0;
+		waves[0].freq = randFreq * 2;
+		waves[0].phi = 0.f;
+		waves[0].k = glm::vec3(0.5f, 0, 0.2f);
 
-	waves[0].amplitude = 1.0;
-	waves[0].freq = randFreq * 2;
-	waves[0].phi = 0.f;
-	waves[0].k = glm::vec3(0.5f, 0, 0.2f);
-
-	//2a ona
-	waves[1].amplitude = 0.8;
-	waves[1].freq = randFreq * 1;
-	waves[1].phi = 2.f;
-	waves[1].k = glm::vec3(0.1f, 0, 0.6f);
-	//3a ona
-	waves[2].amplitude = 0.9;
-	waves[2].freq = randFreq * 3;
-	waves[2].phi = 0.f;
-	waves[2].k = glm::vec3(0.1f, 0, 0.6f);
-	//4a ona
-	waves[3].amplitude = 0.3;
-	waves[3].freq = randFreq * 5;
-	waves[3].phi = 3.f;
-	waves[3].k = glm::vec3(0.8f, 0, 0.3f);
+		//2a ona
+		waves[1].amplitude = 0.8;
+		waves[1].freq = randFreq * 1;
+		waves[1].phi = 2.f;
+		waves[1].k = glm::vec3(0.1f, 0, 0.6f);
+		//3a ona
+		waves[2].amplitude = 0.9;
+		waves[2].freq = randFreq * 3;
+		waves[2].phi = 0.f;
+		waves[2].k = glm::vec3(0.1f, 0, 0.6f);
+		//4a ona
+		waves[3].amplitude = 0.3;
+		waves[3].freq = randFreq * 5;
+		waves[3].phi = 3.f;
+		waves[3].k = glm::vec3(0.8f, 0, 0.3f);
+	}
 	//Grid
 	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
 		
