@@ -164,7 +164,7 @@ namespace GerstnerWaves {
 				//module of relative force
 				float moduloVel = glm::sqrt(glm::pow(sphere->vel.x, 2) + glm::pow(sphere->vel.y, 2) + glm::pow(sphere->vel.z, 2));
 				//applying the formula
-				dragForce = -0.5f * density * cD * glm::abs(volumSub) *  moduloVel * sphere->vel;
+				dragForce = -0.5f * density * cD * (pow(sphere->rad*2, 2) / 10) *  moduloVel * sphere->vel;
 				sphere->force += dragForce;
 			
 		}
