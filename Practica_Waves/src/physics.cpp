@@ -47,7 +47,7 @@ struct OurShpere {
 	glm::vec3 pos;
 	glm::vec3 vel;
 	float rad;
-	float mass = 20;
+	float mass = 300;
 	glm::vec3 linealMomentum;
 	glm::vec3 force;
 
@@ -73,7 +73,7 @@ void GUI() {
 		//GUI Waterfall
 	
 		ImGui::SliderFloat("Time", &cont, 0, 20);
-		ImGui::SliderFloat("Mass", &sphere->mass, 1, 300);
+		ImGui::SliderFloat("Mass", &sphere->mass, 1, 1000);
 		ImGui::SliderFloat("Buoyancy", &cD, 0, 1);
 	}
 
@@ -187,7 +187,10 @@ void PhysicsInit() {
 
 	float randFreq = ((float)rand() / RAND_MAX);
 	//1a ona
-	if (randFreq > 0.2) {
+	while(randFreq <= 0)
+		randFreq = ((float)rand() / RAND_MAX);
+
+	if (randFreq > 0) {
 		waves[0].amplitude = 1.0;
 		waves[0].freq = randFreq * 2;
 		waves[0].phi = 0.f;
